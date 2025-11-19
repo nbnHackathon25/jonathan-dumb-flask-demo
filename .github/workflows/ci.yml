@@ -54,4 +54,3 @@ jobs:
     - name: Build Docker image
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: bash scripts/build.sh
-
