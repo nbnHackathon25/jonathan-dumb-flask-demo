@@ -45,3 +45,14 @@ def test_hello_world_hello(client):
     data = response.get_json()
     assert 'message' in data
     assert data['message'] == 'Hello, World!'
+
+
+def test_greet_endpoint(client):
+    """Test the /greet/<name> endpoint returns personalized greeting."""
+    response = client.get('/greet/Alice')
+    assert response.status_code == 200
+    data = response.get_json()
+    assert 'message' in data
+    assert data['message'] == 'Hello, Alice!'
+    assert 'greeted' in data
+    assert data['greeted'] == 'Alice'

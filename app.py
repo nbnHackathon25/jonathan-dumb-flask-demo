@@ -31,5 +31,14 @@ def hello_world():
     })
 
 
+@app.route('/greet/<name>', methods=['GET'])
+def greet(name):
+    """Return a personalized greeting."""
+    return jsonify({
+        "message": f"Hello, {name}!",
+        "greeted": name
+    })
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
