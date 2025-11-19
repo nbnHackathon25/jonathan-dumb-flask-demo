@@ -61,33 +61,57 @@ if ! docker info &> /dev/null; then
     fi
 fi
 
-# Set image name and tag
-IMAGE_NAME="jonathan-flask-demo"
+# Set image names and tags
+FLASK_IMAGE_NAME="jonathan-flask-demo"
+NGINX_IMAGE_NAME="jonathan-flask-nginx"
 IMAGE_TAG="latest"
-FULL_IMAGE="${IMAGE_NAME}:${IMAGE_TAG}"
+FLASK_FULL_IMAGE="${FLASK_IMAGE_NAME}:${IMAGE_TAG}"
+NGINX_FULL_IMAGE="${NGINX_IMAGE_NAME}:${IMAGE_TAG}"
 
-echo "🐳 Building Docker image: ${FULL_IMAGE}"
+echo "🐳 Building Docker images..."
 echo ""
 
-# Build the Docker image
-docker build -t "${FULL_IMAGE}" .
+# Build the Flask Docker image
+echo "📦 Building Flask image: ${FLASK_FULL_IMAGE}"
+docker build -t "${FLASK_FULL_IMAGE}" .
 
 if [ $? -ne 0 ]; then
-    echo "❌ Docker build failed"
+    echo "❌ Flask Docker build failed"
     exit 1
 fi
+
+echo "✅ Flask image built successfully"
+echo ""
+
+# Build the Nginx Docker image
+echo "📦 Building Nginx proxy image: ${NGINX_FULL_IMAGE}"
+docker build -f Dockerfile.nginx -t "${NGINX_FULL_IMAGE}" .
+
+if [ $? -ne 0 ]; then
+    echo "❌ Nginx Docker build failed"
+    exit 1
+fi
+
+echo "✅ Nginx image built successfully"
 
 echo ""
 echo "================================"
 echo "Build Summary"
 echo "================================"
-echo "✅ Docker image built successfully: ${FULL_IMAGE}"
+echo "✅ Flask image built: ${FLASK_FULL_IMAGE}"
+echo "✅ Nginx image built: ${NGINX_FULL_IMAGE}"
 echo ""
 echo "Next steps:"
-echo "  - Run the container: docker run -p 5000:5000 ${FULL_IMAGE}"
-echo "  - Run in background: docker run -d -p 5000:5000 --name flask-app ${FULL_IMAGE}"
-echo "  - View logs: docker logs flask-app"
-echo "  - Stop container: docker stop flask-app"
-echo "  - Remove container: docker rm flask-app"
 echo ""
-echo "🌐 Access the app at: http://localhost:5000"
+echo "Run Flask app directly:"
+echo "  - docker run -p 5000:5000 ${FLASK_FULL_IMAGE}"
+echo ""
+echo "Run with Nginx proxy (recommended):"
+echo "  - Start Flask: docker run -d --name flask-app ${FLASK_FULL_IMAGE}"
+echo "  - Start Nginx: docker run -d -p 8080:80 --link flask-app:flask-app --name nginx-proxy ${NGINX_FULL_IMAGE}"
+echo "  - Access at: http://localhost:8080"
+echo ""
+echo "Manage containers:"
+echo "  - View logs: docker logs flask-app (or nginx-proxy)"
+echo "  - Stop: docker stop flask-app nginx-proxy"
+echo "  - Remove: docker rm flask-app nginx-proxy"
