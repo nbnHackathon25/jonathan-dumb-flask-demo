@@ -4,7 +4,7 @@
 FROM nginx:1.27-alpine
 
 # Install envsubst and other utilities for dynamic configuration
-RUN apk add --no-cache gettext
+RUN apk update && apk add --no-cache gettext-envsubst
 
 # Remove default nginx config
 RUN rm /etc/nginx/conf.d/default.conf
