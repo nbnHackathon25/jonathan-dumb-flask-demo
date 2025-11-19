@@ -10,17 +10,44 @@ A simple Flask application demonstrating basic REST API endpoints.
 
 ## Setup
 
-1. Install dependencies:
+### Quick Setup
+
+Run the setup script:
+```bash
+./setup.sh
+```
+
+This will automatically install `uv` (if needed), create a virtual environment, and install dependencies.
+
+### Manual Setup
+
+1. Install `uv` (if not already installed):
    ```bash
-   pip install -r requirements.txt
+   curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
 
-2. Run the application:
+2. Create virtual environment and install dependencies:
+   ```bash
+   uv venv
+   uv pip install -e .
+   ```
+
+3. Activate the virtual environment:
+   ```bash
+   source .venv/bin/activate
+   ```
+
+4. Run the application:
    ```bash
    python app.py
    ```
 
-3. The server will start on `http://localhost:5000`
+   Or run directly with `uv`:
+   ```bash
+   uv run python app.py
+   ```
+
+5. The server will start on `http://localhost:5000`
 
 ## Testing the Endpoints
 

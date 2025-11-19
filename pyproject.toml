@@ -1,0 +1,8 @@
+[project]
+name = "jonathan-dumb-flask-demo"
+version = "1.0.0"
+description = "A simple Flask demo application"
+requires-python = ">=3.8"
+dependencies = [
+    "Flask==3.0.0",
+]
