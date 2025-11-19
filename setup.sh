@@ -16,7 +16,7 @@ echo "✅ uv found: $(uv --version)"
 
 # Create virtual environment and install dependencies
 echo "📦 Creating virtual environment and installing dependencies..."
-uv sync
+uv sync --allow-insecure-host pypi.org
 
 # Find an available port starting from 5000
 DEFAULT_PORT=5000

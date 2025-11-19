@@ -31,3 +31,6 @@ precision = 2
 
 [tool.coverage.html]
 directory = "htmlcov"
+
+[uv.tool]
+allow-insecure-host = 'pypi.org'
