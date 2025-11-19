@@ -7,10 +7,10 @@ echo "Building Flask Application Docker Image"
 echo "================================"
 echo ""
 
-# Docker availability is checked by setup.sh
+# Docker availability is checked by scripts/setup.sh
 # Verify Docker is accessible
 if ! command -v docker &> /dev/null; then
-    echo "❌ Docker is not installed. Please run setup.sh first."
+    echo "❌ Docker is not installed. Please run scripts/setup.sh first."
     exit 1
 fi
 

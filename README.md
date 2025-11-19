@@ -14,7 +14,7 @@ A simple Flask application demonstrating basic REST API endpoints.
 
 Run the setup script:
 ```bash
-./setup.sh
+./scripts/setup.sh
 ```
 
 This will automatically install `uv` (if needed), create a virtual environment, and install dependencies.

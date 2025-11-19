@@ -22,19 +22,19 @@ jobs:
         python-version: '3.12'
     
     - name: Setup environment
-      run: bash setup.sh
+      run: bash scripts/setup.sh
     
     - name: Run linting
-      run: bash lint.sh
+      run: bash scripts/lint.sh
     
     - name: Run application
-      run: bash run_local.sh &
+      run: bash scripts/run_local.sh &
       
     - name: Wait for app to start
       run: sleep 5
     
     - name: Run tests with coverage
-      run: bash run_tests.sh
+      run: bash scripts/run_tests.sh
     
     - name: Upload coverage reports
       if: always()
@@ -53,5 +53,5 @@ jobs:
     
     - name: Build Docker image
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: bash build.sh
+      run: bash scripts/build.sh
 
