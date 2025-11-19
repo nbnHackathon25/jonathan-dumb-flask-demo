@@ -36,16 +36,61 @@ done
 
 echo "✅ Port $PORT is available"
 
+# Detect Flask application file and variable name
+echo ""
+echo "🔎 Detecting Flask application..."
+FLASK_FILE=""
+FLASK_APP_VAR=""
+
+# Search for Flask app in common locations
+for file in app.py main.py server.py application.py wsgi.py run.py; do
+    if [ -f "$file" ]; then
+        # Check if file contains Flask app instantiation
+        if grep -q "Flask(__name__)" "$file" 2>/dev/null; then
+            FLASK_FILE="$file"
+            # Try to detect the app variable name (e.g., app = Flask(__name__))
+            FLASK_APP_VAR=$(grep -oE '^\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*Flask\(' "$file" | head -1 | sed -E 's/^\s*([a-zA-Z_][a-zA-Z0-9_]*).*/\1/')
+            break
+        fi
+    fi
+done
+
+# Fallback: search all Python files if not found
+if [ -z "$FLASK_FILE" ]; then
+    for file in *.py; do
+        if [ -f "$file" ] && grep -q "Flask(__name__)" "$file" 2>/dev/null; then
+            FLASK_FILE="$file"
+            FLASK_APP_VAR=$(grep -oE '^\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*Flask\(' "$file" | head -1 | sed -E 's/^\s*([a-zA-Z_][a-zA-Z0-9_]*).*/\1/')
+            break
+        fi
+    done
+fi
+
+# Default values if detection fails
+if [ -z "$FLASK_FILE" ]; then
+    FLASK_FILE="app.py"
+    FLASK_APP_VAR="app"
+    echo "⚠️  Could not detect Flask app, using defaults: $FLASK_FILE with variable '$FLASK_APP_VAR'"
+else
+    echo "✅ Detected Flask app: $FLASK_FILE with variable '$FLASK_APP_VAR'"
+fi
+
+# Extract module name (filename without .py extension)
+MODULE_NAME="${FLASK_FILE%.py}"
+
 echo ""
 echo "✅ Setup complete!"
 echo ""
 echo "To run the application:"
 echo "  1. Activate the virtual environment: source .venv/bin/activate"
-echo "  2. Run the app on port $PORT: python -c \"from app import app; app.run(debug=True, host='0.0.0.0', port=$PORT)\""
+echo "  2. Run the app on port $PORT: python -c \"from $MODULE_NAME import $FLASK_APP_VAR; $FLASK_APP_VAR.run(debug=True, host='0.0.0.0', port=$PORT)\""
 echo "  3. Access the app at: http://localhost:$PORT"
 echo ""
 echo "Alternative: Run directly with uv:"
-echo "  uv run python -c \"from app import app; app.run(debug=True, host='0.0.0.0', port=$PORT)\""
+echo "  uv run python -c \"from $MODULE_NAME import $FLASK_APP_VAR; $FLASK_APP_VAR.run(debug=True, host='0.0.0.0', port=$PORT)\""
+echo ""
+echo "Or use the local_run.sh script:"
+echo "  ./local_run.sh"
 echo ""
 echo "Available endpoints:"
 echo "  - http://localhost:$PORT/"
