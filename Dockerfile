@@ -1,22 +1,40 @@
 # Build stage
 FROM ghcr.io/astral-sh/uv:debian
 
-ENV UV_NATIVE_TLS=1
-ENV UV_INSECURE_HOST="pypi.org,files.pythonhosted.org,pypi.python.org"
-ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+# Set environment variables for SSL/TLS
+ENV UV_NATIVE_TLS=1 \
+    SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
+    REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
+    CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+
 # Set working directory
 WORKDIR /app
 
-# Install and update ca-certificates FIRST (critical for SSL to work)
+# Install system dependencies and update CA certificates
 RUN apt-get update && \
-    apt-get install -y ca-certificates curl && \
-    update-ca-certificates && \
+    apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    && update-ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy setup script and dependencies
-COPY . ./
+# Copy dependency files first (for better layer caching)
+COPY pyproject.toml requirements.txt* ./
 
-# Run setup script to install uv and dependencies
-RUN bash setup.sh
+# Install dependencies using uv
+# If no lock file exists, uv will resolve dependencies
+RUN uv sync --no-dev --no-install-project || uv pip install -r requirements.txt --system
 
-ENTRYPOINT [ "./local_run.sh" ]
+# Copy the rest of the application
+COPY . .
+
+# Expose the Flask port
+EXPOSE 8080
+
+# Set environment variables for Flask
+ENV FLASK_ENV=production \
+    PORT=8080
+
+# Run the Flask app with gunicorn for production
+# Using uv run ensures the virtual environment is activated
+CMD ["uv", "run", "python", "-c", "from app import app; app.run(debug=False, host='0.0.0.0', port=8080)"]
