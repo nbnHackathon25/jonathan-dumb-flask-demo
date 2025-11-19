@@ -24,6 +24,9 @@ jobs:
     - name: Setup environment
       run: bash setup.sh
     
+    - name: Run linting
+      run: bash lint.sh
+    
     - name: Run application
       run: bash local_run.sh &
       
