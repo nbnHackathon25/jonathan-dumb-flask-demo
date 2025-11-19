@@ -28,7 +28,7 @@ jobs:
       run: bash lint.sh
     
     - name: Run application
-      run: bash local_run.sh &
+      run: bash run_local.sh &
       
     - name: Wait for app to start
       run: sleep 5
